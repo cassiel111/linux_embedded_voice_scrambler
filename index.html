@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>语音加扰/解扰项目</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #1a1c23;
+            color: #e6e6e6;
+            padding: 20px;
+        }
+        .page-title {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .online { background: #1a5e3a; }
+        .offline { background: #7a2020; }
+        .btn-group {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 18px;
+            background: #307cbe;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .unlock-btn {
+            background: #2ea862;
+            margin-left: 10px;
+        }
+        .main-wrap {
+            display: flex;
+            gap: 30px;
+        }
+        .audio-left {
+            flex: 6;
+        }
+        .audio-card {
+            width: 100%;
+            border: 1px solid #444;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 4px;
+            margin: 12px 0;
+            font-size: 16px;
+        }
+        audio {
+            width: 100%;
+            margin: 6px 0;
+        }
+
+        /* 带坐标轴的画布容器 */
+        .spec-wrapper {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            margin: 12px 0;
+        }
+        .spec-canvas {
+            position: absolute;
+            left: 40px;
+            top: 10px;
+            width: calc(100% - 50px);
+            height: 220px;
+            background: #080810;
+            border: 1px solid #444;
+        }
+        /* 坐标轴标签 */
+        .axis-x {
+            position: absolute;
+            bottom: 0;
+            left: 40px;
+            width: calc(100% - 50px);
+            text-align: center;
+            font-size: 12px;
+            color: #aaa;
+        }
+        .axis-y {
+            position: absolute;
+            left: 5px;
+            top: 110px;
+            transform: translateY(-50%) rotate(-90deg);
+            font-size: 12px;
+            color: #aaa;
+            white-space: nowrap;
+        }
+        /* 右侧能量色阶图例 */
+        .color-legend {
+            position: absolute;
+            right: 0;
+            top: 10px;
+            width: 30px;
+            height: 220px;
+            background: linear-gradient(to bottom, #ffff5a 0%, #55ffaa 50%, #4488ff 100%);
+            border: 1px solid #444;
+        }
+        .legend-text {
+            position: absolute;
+            right: -40px;
+            font-size: 11px;
+            color: #ccc;
+        }
+        .legend-strong { top: 5px; }
+        .legend-medium { top: 100px; }
+        .legend-weak { bottom: 5px; }
+
+        /* 右侧日志 */
+        .log-right {
+            flex: 4;
+        }
+        .log-title {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        #logBox {
+            width: 100%;
+            height: 700px;
+            background: #0f1118;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 12px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .log-info { color: #6cf; }
+        .log-success { color: #6f6; }
+        .log-warn { color: #fc6; }
+        .log-error { color: #f66; }
+    </style>
+</head>
+
+<body>
+    <h1 class="page-title">语音加扰/解扰项目</h1>
+
+    <div class="status" id="status">正在检测连接...</div>
+    <div class="btn-group">
+        <button onclick="pullAudio()">同步开发板音频</button>
+        <button class="unlock-btn" onclick="unlockAudioCtx()">点击解锁频谱绘制</button>
+    </div>
+
+    <div class="main-wrap">
+        <div class="audio-left">
+            <div class="audio-card">
+                <h3>原始音频</h3>
+                <select id="sel-origin"><option value="">选择音频</option></select>
+
+                <div class="spec-wrapper">
+                    <canvas id="spec1" class="spec-canvas" width="800" height="220"></canvas>
+                    <div class="axis-x">时间 / s</div>
+                    <div class="axis-y">频率 / Hz</div>
+                    <div class="color-legend"></div>
+                    <div class="legend-text legend-strong">强</div>
+                    <div class="legend-text legend-medium">中</div>
+                    <div class="legend-text legend-weak">弱</div>
+                </div>
+
+                <audio id="a1" controls>
+            </div>
+
+            <div class="audio-card">
+                <h3>加扰/解扰后音频</h3>
+                <select id="sel-masked"><option value="">选择音频</option></select>
+
+                <div class="spec-wrapper">
+                    <canvas id="spec2" class="spec-canvas" width="800" height="220"></canvas>
+                    <div class="axis-x">时间 / s</div>
+                    <div class="axis-y">频率 / Hz</div>
+                    <div class="color-legend"></div>
+                    <div class="legend-text legend-strong">强</div>
+                    <div class="legend-text legend-medium">中</div>
+                    <div class="legend-text legend-weak">弱</div>
+                </div>
+
+                <audio id="a2" controls>
+            </div>
+        </div>
+
+        <div class="log-right">
+            <h2 class="log-title">运行日志</h2>
+            <div id="logBox"></div>
+        </div>
+    </div>
+
+<script>
+    const selOrigin = document.getElementById("sel-origin");
+    const selMasked = document.getElementById("sel-masked");
+    const audio1 = document.getElementById("a1");
+    const audio2 = document.getElementById("a2");
+    const canvas1 = document.getElementById("spec1");
+    const canvas2 = document.getElementById("spec2");
+    const ctx1 = canvas1.getContext("2d");
+    const ctx2 = canvas2.getContext("2d");
+    const logBox = document.getElementById("logBox");
+
+    let audioCtx1 = null, audioCtx2 = null;
+    let audioUnlocked = false;
+
+    // 日志
+    function printLog(text, type="info") {
+        const t = new Date().toLocaleTimeString();
+        const color = {
+            info:"log-info", success:"log-success", warn:"log-warn", error:"log-error"
+        }[type];
+        logBox.innerHTML += `<div class="${color}">[${t}] ${text}</div>`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    // 解锁音频上下文
+    function unlockAudioCtx() {
+        printLog("初始化 AudioContext，解锁频谱绘制", "info");
+        audioCtx1 = new (window.AudioContext||window.webkitAudioContext)();
+        audioCtx2 = new (window.AudioContext||window.webkitAudioContext)();
+        audioUnlocked = true;
+        printLog("频谱绘制已解锁，可以选择音频", "success");
+    }
+
+    // 在线状态
+    async function check() {
+        const res = await fetch('/api/check');
+        const d = await res.json();
+        const s = document.getElementById('status');
+        if (d.online) {
+            s.className = "status online";
+            s.innerText = "✅ 已连接开发板";
+        } else {
+            s.className = "status offline";
+            s.innerText = "❌ 开发板离线";
+        }
+    }
+
+    // 同步音频
+    async function pullAudio() {
+        printLog("开始同步开发板音频", "info");
+        await fetch('/api/pull');
+        printLog("同步完成", "success");
+        refreshAudioList();
+    }
+
+    // 刷新文件列表
+    async function refreshAudioList() {
+        const res = await fetch("/api/audio_list");
+        const {list} = await res.json();
+        printLog("读取音频：" + list.join(" "), "info");
+        selOrigin.innerHTML = `<option value="">选择音频</option>`;
+        selMasked.innerHTML = `<option value="">选择音频</option>`;
+        list.forEach(n=>{
+            const o1 = document.createElement("option");
+            o1.value = n; o1.innerText = n;
+            selOrigin.appendChild(o1);
+
+            const o2 = document.createElement("option");
+            o2.value = n; o2.innerText = n;
+            selMasked.appendChild(o2);
+        });
+    }
+
+    // 绘制带坐标轴的时频图
+    async function drawSpec(filename, canvas, ctx, audioCtx) {
+        if (!audioUnlocked) {
+            alert("请先解锁频谱");
+            printLog("未解锁，无法绘制", "warn");
+            return;
+        }
+        printLog(`加载 ${filename} 并绘制时频图`, "info");
+        const url = `/audio/${filename}`;
+
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = "#080810";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+
+        const ad = canvas === canvas1 ? audio1 : audio2;
+        ad.src = url;
+        await new Promise(r=>ad.onloadedmetadata=r);
+
+        const buf = await (await fetch(url)).arrayBuffer();
+        const ab = await audioCtx.decodeAudioData(buf);
+
+        renderSTFT(ab, canvas, ctx);
+        printLog(`${filename} 时频图绘制完成`, "success");
+    }
+
+    // STFT 时频图 + 彩色能量
+    function renderSTFT(audioBuf, canvas, ctx) {
+        const FFT = 1024;
+        const HOP = 256;
+        const data = audioBuf.getChannelData(0);
+        const frames = Math.floor((data.length-FFT)/HOP);
+        const W = canvas.width, H = canvas.height;
+        const freqScale = H/(FFT/2);
+
+        for (let i=0; i<frames; i++) {
+            const start = i*HOP;
+            const frame = data.slice(start, start+FFT);
+            const x = (i/frames)*W;
+
+            for (let f=0; f<FFT/2; f++) {
+                const v = Math.abs(frame[f]);
+                const db = 20*Math.log10(v+1e-10);
+
+                let r=0,g=0,b=180;
+                if (db > -20) { r=255;g=255;b=100; }
+                else if (db > -50) { r=100;g=220;b=120; }
+
+                ctx.fillStyle = `rgb(${r},${g},${b})`;
+                const y = H - f*freqScale;
+                ctx.fillRect(x, y, W/frames+1, freqScale+1);
+            }
+        }
+    }
+
+    selOrigin.addEventListener("change", e=>{
+        if (e.target.value) drawSpec(e.target.value, canvas1, ctx1, audioCtx1);
+    });
+    selMasked.addEventListener("change", e=>{
+        if (e.target.value) drawSpec(e.target.value, canvas2, ctx2, audioCtx2);
+    });
+
+    setInterval(check, 2000);
+    check();
+    refreshAudioList();
+    printLog("页面初始化完成", "success");
+</script>
+</body>
+</html>
