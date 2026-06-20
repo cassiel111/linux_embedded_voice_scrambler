@@ -94,7 +94,15 @@ GUI界面(Qt4.8)
 ├── STFT解扰
 └── 处理时延统计
 ```
-
+```text
+web网页
+│
+├── 板卡WAV文件同步
+├── 原始波形显示
+├── 处理后波形显示
+├── 音频播放
+└── 处理时延统计
+```
 ---
 
 ## 工作模式
@@ -152,34 +160,7 @@ GUI界面(Qt4.8)
 
 ---
 
-## 工程结构
 
-```text
-linux_embedded_voice_scrambler
-│
-├── main.cpp
-├── mainwindow.cpp
-├── mainwindow.h
-├── mainwindow.ui
-│
-├── wav.c
-├── wav.h
-│
-├── stft.c
-├── stft.h
-│
-├── scramble.c
-├── scramble.h
-│
-├── qcustomplot.cpp
-├── qcustomplot.h
-│
-├── VoiceScrambler.pro
-│
-└── README.md
-```
-
----
 
 ## 编译方法
 
@@ -193,7 +174,7 @@ make
 运行程序：
 
 ```bash
-./VoiceScrambler
+./VoiceUI
 ```
 
 ---
@@ -207,18 +188,12 @@ make
 5. 点击开始处理
 6. 查看处理后波形
 7. 保存输出文件
+8. 网页联通单片机获取处理后的WAV文件
+9. 查看时频图和播放音频
 
 ---
 
-## 应用场景
 
-- 嵌入式语音保密通信
-- 数字信号处理教学实验
-- 音频加扰算法研究
-- Linux音频开发学习
-- 毕业设计与课程设计
-
----
 
 ## 后续优化方向
 
