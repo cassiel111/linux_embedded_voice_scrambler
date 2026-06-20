@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Audio Scrambler &amp; Descrambler</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_Top">
+      <item>
+       <widget class="QPushButton" name="btnOpenFile">
+        <property name="minimumSize">
+         <size>
+          <width>70</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Open WAV File</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelFileName">
+        <property name="minimumSize">
+         <size>
+          <width>180</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>File: None</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupWorkMode">
+        <property name="minimumSize">
+         <size>
+          <width>110</width>
+          <height>36</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Work Mode</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="margin">3</property>
+         <item>
+          <widget class="QComboBox" name="cboWorkMode">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>26</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupAlgorithm">
+        <property name="minimumSize">
+         <size>
+          <width>110</width>
+          <height>36</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Algorithm Mode</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="margin">3</property>
+         <item>
+          <widget class="QComboBox" name="cboAlgorithm">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>26</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupCarrier">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>36</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Carrier Frequency</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <property name="margin">3</property>
+         <item>
+          <widget class="QComboBox" name="cboCarrier">
+           <property name="minimumSize">
+            <size>
+             <width>110</width>
+             <height>26</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnStartProcess">
+        <property name="minimumSize">
+         <size>
+          <width>70</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Start Process</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelDelay">
+        <property name="minimumSize">
+         <size>
+          <width>70</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Delay: 0 ms</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_Plot">
+      <item>
+       <widget class="QCustomPlot" name="plotOriginal" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>480</width>
+          <height>480</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomPlot" name="plotProcessed" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>480</width>
+          <height>480</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header location="global">qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
